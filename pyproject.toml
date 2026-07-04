@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "llm-security-gateway"
 version = "0.1.0"
-description = "Security/privacy proxy between clients and third-party LLM providers."
+description = "security/privacy proxy between clients and third-party llm providers"
 requires-python = ">=3.10"
 dependencies = [
     "fastapi>=0.110",
@@ -25,7 +25,7 @@ dev = [
     "pytest-asyncio>=0.23",
 ]
 
-# Only the gateway package is pure-Python; `ac_engine` is built from setup.py.
+# only the gateway pkg is pure-python, ac_engine gets built from setup.py
 [tool.setuptools]
 packages = ["gateway", "gateway.stages", "gateway.providers"]
 
