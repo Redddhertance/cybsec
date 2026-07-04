@@ -1,0 +1,13 @@
+{
+  "_comment": "egress signatures: substrings that must never appear in a response returned to a client (internal hostnames, secret prefixes, confidential markers). Replace with your own. Same shape rules as injection_signatures.json.",
+  "secret_markers": [
+    "BEGIN RSA PRIVATE KEY",
+    "AKIA",
+    "sk-live_",
+    "xoxb-"
+  ],
+  "internal_markers": [
+    "CONFIDENTIAL - INTERNAL USE ONLY",
+    "internal.corp.local"
+  ]
+}

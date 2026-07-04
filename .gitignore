@@ -1,0 +1,23 @@
+.vscode/
+.idea/
+.claude/
+.pytest_cache/
+.DS_Store
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# compiled c++ ext
+*.so
+
+# secrets + local runtime (keep .env.example tracked)
+.env
+audit.db
+audit.db-wal
+audit.db-shm
