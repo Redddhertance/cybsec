@@ -5,6 +5,9 @@ every request runs through a 9-stage pipeline. the heavy bit - matching prompts
 against thousands of injection signatures - is a c++ aho-corasick engine wrapped
 with pybind11. the fastapi app drives everything else.
 
+> architecture, design decisions and the pre-release security review are written up
+> in [design/design.md](design/design.md).
+
 ## the pipeline
 
 1. ingress / identity - fastapi + pydantic parse the raw body into a typed object
