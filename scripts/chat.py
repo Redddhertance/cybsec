@@ -52,11 +52,8 @@ def main() -> None:
         # --- is the server even up ---
         try:
             h = client.get(healthz)
-            info = h.json()
-            say(f"server ok  provider={info.get('provider')}  "
-                f"signatures={info.get('injection_signatures')}  "
-                f"ner={info.get('ner')}  "
-                f"rate-fallback={info.get('rate_limit_fallback')}")
+            ok = h.status_code == 200 and h.json().get("status") == "ok"
+            say("server ok" if ok else f"server responded {h.status_code}")
         except Exception as exc:
             say(f"err: cant reach {healthz}: {exc}")
             say("is the server running?  python3 -m uvicorn gateway.app:app --port 8000")

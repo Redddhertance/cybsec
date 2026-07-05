@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 
 import httpx
@@ -12,6 +13,7 @@ from gateway.models import Message
 from gateway.stages import StageError
 
 _STAGE = "proxy"
+_log = logging.getLogger("gateway.provider")
 
 
 class Provider(ABC):
@@ -47,7 +49,11 @@ class Provider(ABC):
             resp = await client.post(url, headers=headers, json=body)
             resp.raise_for_status()
         except httpx.HTTPStatusError as exc:
-            raise StageError(_STAGE, 502, f"Upstream provider error: {exc.response.status_code}")
+            # log the real status/url for ops, keep the client-facing detail generic
+            # so we dont leak the upstream host in an error body
+            _log.warning("provider %s returned %s", self.name, exc.response.status_code)
+            raise StageError(_STAGE, 502, "Upstream provider error.")
         except httpx.HTTPError as exc:
-            raise StageError(_STAGE, 502, f"Upstream provider unreachable: {exc}")
+            _log.warning("provider %s unreachable: %s", self.name, exc)
+            raise StageError(_STAGE, 502, "Upstream provider unavailable.")
         return self.parse_response(resp.json())

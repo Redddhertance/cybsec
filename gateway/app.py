@@ -13,7 +13,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from gateway import pipeline
-from gateway.config import get_settings
+from gateway.config import DEFAULT_JWT_SECRET, get_settings
 from gateway.models import ErrorResponse, GatewayRequest, GatewayResponse
 from gateway.pipeline import GatewayContext
 from gateway.providers import get_provider
@@ -29,6 +29,13 @@ logger = logging.getLogger("gateway")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
+
+    # dont let anyone boot prod on the placeholder secret - tokens would be forgeable
+    if settings.jwt_secret == DEFAULT_JWT_SECRET:
+        raise RuntimeError(
+            "GATEWAY_JWT_SECRET is still the default placeholder. set a real one "
+            "(32+ bytes) in .env before starting."
+        )
 
     injection_scanner = ThreatScanner.from_file(settings.injection_signatures_path)
     internal_scanner = ThreatScanner.from_file(settings.internal_signatures_path)
@@ -74,14 +81,9 @@ app = FastAPI(title="LLM Security Gateway", version="0.1.0", lifespan=lifespan)
 
 @app.get("/healthz")
 async def healthz() -> dict:
-    ctx: GatewayContext = app.state.ctx
-    return {
-        "status": "ok",
-        "injection_signatures": ctx.injection_scanner.pattern_count,
-        "rate_limit_fallback": ctx.limiter.using_fallback,
-        "provider": ctx.provider.name,
-        "ner": ctx.ner is not None,
-    }
+    # liveness only. deliberately no provider / signature / fallback detail here -
+    # its unauthenticated, no point handing recon info to the internet.
+    return {"status": "ok"}
 
 
 @app.post("/v1/messages", response_model=GatewayResponse)

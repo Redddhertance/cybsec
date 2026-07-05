@@ -62,7 +62,8 @@ curl -s localhost:8000/v1/messages \
 defaults to the mock provider (echoes back, no api key needed). for a real llm set
 `GATEWAY_PROVIDER=anthropic` (or `openai`) + `GATEWAY_PROVIDER_API_KEY` in `.env`.
 
-note: use a jwt secret of 32+ bytes or pyjwt moans about key length.
+note: the app wont boot on the default `GATEWAY_JWT_SECRET` - set a real one
+(32+ bytes) in `.env` first, otherwise tokens would be forgeable.
 
 ## signatures
 

@@ -12,6 +12,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _ROOT = Path(__file__).resolve().parent.parent
 
+# the placeholder secret shipped in .env.example. the app refuses to boot on this
+# so nobody accidentally runs prod with forgeable tokens.
+DEFAULT_JWT_SECRET = "dev-insecure-secret-change-me"
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -22,7 +26,7 @@ class Settings(BaseSettings):
     )
 
     # --- stage 2: jwt auth ---
-    jwt_secret: str = Field(default="dev-insecure-secret-change-me")
+    jwt_secret: str = Field(default=DEFAULT_JWT_SECRET)
     jwt_algorithm: str = Field(default="HS256")
     jwt_audience: str | None = Field(default=None)
     jwt_issuer: str | None = Field(default=None)
